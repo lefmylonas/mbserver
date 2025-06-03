@@ -6,6 +6,9 @@ import (
 	"net"
     "math/rand"
     "time"
+	"encoding/csv"
+	"os"
+	"strconv"
 
 	"github.com/goburrow/serial"
 )
@@ -86,13 +89,36 @@ func (s *Server) handle(request *Request) Framer {
 }
 
 func (s *Server) random_generator() {
-	min := 120
-	max := 150
-	for{
-		for i := 0; i < 10; i++ {
-			s.HoldingRegisters[i] = uint16(rand.Intn(max - min + 1) + min)
+	file, err := os.Open("realtime_8s_modbus.csv")
+	if err != nil {
+		if s.Debug {
+			println("Error opening file:", err.Error())
 		}
-		time.Sleep(time.Second * time.Duration(rand.Intn(10)))	
+		return
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	for {
+		record, err := reader.Read()
+		if err != nil {
+			if s.Debug {
+				println("Error reading file:", err.Error())
+			}
+			break
+		}
+
+		for i, col := range record[1:5] { // Columns 2-5
+			value, err := strconv.ParseInt(col, 10, 16)
+			if err != nil {
+				if s.Debug {
+					println("Error parsing value:", err.Error())
+				}
+				continue
+			}
+			s.HoldingRegisters[6338+i*2] = uint16(value)
+		}
+		time.Sleep(time.Second * 8) // Wait for 8 seconds before reading the next row
 	}
 }
 
