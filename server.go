@@ -123,7 +123,7 @@ func (s *Server) random_generator() {
 				// }
 				continue
 			}
-			s.HoldingRegisters[6338+i*2] = uint16(value)
+			s.HoldingRegisters[6338+i-1] = uint16(value)
 		}
 		time.Sleep(time.Second * 8) // Wait for 8 seconds before reading the next row
 	}
