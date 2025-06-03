@@ -99,6 +99,13 @@ func (s *Server) random_generator() {
 	defer file.Close()
 
 	reader := csv.NewReader(file)
+	// Skip the header row
+	_, err = reader.Read()
+	if err != nil {
+		println("Error reading header:", err.Error())
+		return
+	}
+
 	for {
 		record, err := reader.Read()
 		if err != nil {
