@@ -91,9 +91,9 @@ func (s *Server) handle(request *Request) Framer {
 func (s *Server) random_generator() {
 	file, err := os.Open("realtime_8s_modbus.csv")
 	if err != nil {
-		if s.Debug {
-			println("Error opening file:", err.Error())
-		}
+		// if s.Debug {
+		println("Error opening file:", err.Error())
+		// }
 		return
 	}
 	defer file.Close()
@@ -102,18 +102,18 @@ func (s *Server) random_generator() {
 	for {
 		record, err := reader.Read()
 		if err != nil {
-			if s.Debug {
-				println("Error reading file:", err.Error())
-			}
+			// if s.Debug {
+			println("Error reading file:", err.Error())
+			// }
 			break
 		}
 
 		for i, col := range record[1:5] { // Columns 2-5
 			value, err := strconv.ParseInt(col, 10, 16)
 			if err != nil {
-				if s.Debug {
-					println("Error parsing value:", err.Error())
-				}
+				// if s.Debug {
+				println("Error parsing value:", err.Error())
+				// }
 				continue
 			}
 			s.HoldingRegisters[6338+i*2] = uint16(value)
